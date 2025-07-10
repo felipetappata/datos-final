@@ -1,0 +1,29 @@
+---
+format:
+  latex:
+    documentclass: subfiles
+    classoption: [../datos_final.tex]
+    
+---
+
+This is `Stata` code.
+
+```stata
+clear all
+set more off
+set seed 08869  // As specified in instructions
+
+// Optimize Mata for speed (helps with xtabond2 performance)
+mata: mata set matafavor speed, perm
+
+// Parse command line arguments
+if "`1'" == "" | "`2'" == "" | "`3'" == "" {
+    display as error "Usage: stata -b do nonendogenous.do N model rho"
+    display as error "Where N={500,5000}, model={A,B}, rho={0.25,0.50,0.75}"
+    exit 198
+}
+
+local N `1'
+local model `2'  
+local rho `3'
+```

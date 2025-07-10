@@ -1,0 +1,136 @@
+%% !TeX root = filename
+\documentclass[12pt,letterpaper,reqno,oneside]{amsart}
+\usepackage{standalone}
+\usepackage{subfiles}
+\usepackage{subcaption}
+\usepackage{dcolumn}
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage[spanish,es-nodecimaldot,safe=none]{babel}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{threeparttable} % for table notes
+\usepackage[backend=biber,style=authoryear,natbib=true]{biblatex}
+\addbibresource[label=main]{references.bib}
+\usepackage{mdframed}
+\usepackage{amsfonts}
+\usepackage{physics}
+% \usepackage{cmbright}
+\usepackage{calc}
+\usepackage{datetime}
+\usepackage[style=american]{csquotes}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{amsthm}
+% \usepackage[extreme]{savetrees}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{xfrac}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{marginnote}
+\usepackage{listings}
+\usepackage[shortlabels]{enumitem}
+\usepackage[hidelinks]{hyperref}
+%\usepackage[useregional=text]{datetime2}
+\usepackage{placeins}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\pgfplotsset{compat=1.5}
+% \setlength\parindent{0pt}
+
+
+% Equations numbers are preceded by subsection
+% \numberwithin{equation}{subsection}
+
+% \theoremstyle{definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}[subsection]
+\newtheorem{prop}{Proposition}
+\newtheorem{cor}{Corollary}[prop]
+\newtheorem{remark}{Remark}
+\newtheorem{lemma}{Lemma}[subsection]
+% Define a new style for the 'problem' environment
+\newtheoremstyle{problemstyle}
+  {0pt} % Space above
+  {\topsep} % Space below
+  {} % Body font
+  {0pt} % Indent amount
+  {\bfseries} % Theorem head font
+  {.} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {} % Theorem head spec (can be left empty)
+
+\theoremstyle{problemstyle} % Apply the new style for 'problem'
+\newtheorem{problem}{Problem}
+\newtheorem{appendixproblem}{Problem}
+\theoremstyle{definition} % Revert to 'definition' style for subsequent environments
+\newtheorem{solution}{Solution}[problem]
+\newtheorem{appendixsolution}{Solution}[appendixproblem]
+\renewcommand{\theappendixproblem}{\thesection}
+\renewcommand{\theappendixsolution}{\theappendixproblem~(\alph{appendixsolution})}
+\renewcommand{\thesolution}{\theproblem~(\alph{solution})}
+
+% Section styling
+% \renewcommand\thesection{\arabic{section}}
+% \renewcommand\thesubsection{\thesection.\Alph{subsection}}
+% \renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
+
+% Operators
+\DeclareMathOperator{\ar}{AR}
+\DeclareMathOperator{\ma}{MA}
+\DeclareMathOperator{\arma}{ARMA}
+\DeclareMathOperator{\garch}{GARCH}
+\DeclareMathOperator{\plim}{p\!\lim}
+
+% Packages for quarto
+
+
+\begin{document}
+\author[F. I. Tappata]{Felipe. I. Tappata}
+% \address{Universidad Torcuato Di Tella, Buenos Aires, Argentina}
+% \email{ftappata@mail.utdt.edu}
+\newdate{date}{27}{06}{2025} % 2025-05-25
+\date{\displaydate{date}}
+
+\title[Final Exam]{Datos de Panel: Examen Final}
+\begin{abstract}
+  Este documento contiene la solución al examen final de la materia \emph{Datos de Panel} en la Universidad Torcuato Di Tella, primer trimestre de 2025.
+  El trabajo consiste en la replicación de ciertas tablas y figuras del trabajo de \textcite{al-sadoonSimpleMethodsConsistent2019}, y un análisis de los resultados obtenidos.
+  El código usado fue entregado junto a este documento, y se puede encontrar también en el repositorio \url{https://github.com/felipetappata/datos-final}.
+  El software usado es Stata, con un uso auxiliar de Python y Bash para el procesamiento de \emph{output} y ayuda en la ejecución simultánea de simulaciones.
+  El archivo \texttt{README.md} en la raíz del repositorio contiene instrucciones detalladas para la replicación de los resultados.
+\end{abstract}
+\maketitle
+% Problem statements are enclosed in boxes, with solutions following.
+% At the cost of slight repetition, I have attempted to make the solutions self-contained.
+\begin{mdframed}
+  \begin{problem}
+  \label{prob:1}
+  Reproduzca las tablas 1 a 3 del trabajo de Sadoon et al.
+  \end{problem}
+\end{mdframed}
+\begin{solution}
+  \begin{table}[htbp]
+    \centering
+    \caption{Sesgo promedio en el modelo $\ar(1)$ ($T = 7$, $500$~replicaciones)}
+    \label{tab:table1}
+    \input{../code/output/tables/table1.tex}
+  \end{table}
+\end{solution}
+\begin{mdframed}
+  \begin{problem}
+  \label{prob:2}
+  Reproduzca la figura~1 del trabajo de Sadoon et al.
+  \end{problem}
+\end{mdframed}
+\begin{mdframed}
+  \begin{problem}
+  \label{prob:3}
+  Comente sobre el sesgo promedio de las estimaciones a medida que aumenta el valor del parámetro de persistencia $\rho$ para ambos estimadores: Arellano-Bond y SyS. ¿Varían las conclusiones al trabajar con muestras pequeñas o grandes?
+
+  \end{problem}
+\end{mdframed}
+\printbibliography
+\end{document}
