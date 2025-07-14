@@ -7,11 +7,11 @@
 \usepackage[margin=1in]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-% \usepackage[spanish,es-nodecimaldot,safe=none]{babel}
+\usepackage[spanish,es-nodecimaldot,safe=none]{babel}
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{threeparttable} % for table notes
-\usepackage[backend=biber,style=authoryear,natbib=true]{biblatex}
+\usepackage[backend=biber,style=authoryear,natbib=true,maxcitenames=2,mincitenames=1,maxbibnames=99]{biblatex}
 \addbibresource[label=main]{references.bib}
 \usepackage{mdframed}
 \usepackage{amsfonts}
@@ -26,11 +26,22 @@
 % \usepackage[extreme]{savetrees}
 \usepackage{caption}
 \usepackage{graphicx}
+\usepackage{xcolor}
 \usepackage{xfrac}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{marginnote}
 \usepackage{listings}
+\input{stata-lstlisting.tex}
+% Configure listings to use the same font as \texttt
+\lstset{
+  basicstyle=\ttfamily,
+  columns=flexible,
+  keepspaces=true,
+  breaklines=true,
+  frame=none,
+  backgroundcolor=\color{gray!10}
+}
 \usepackage[shortlabels]{enumitem}
 \usepackage[hidelinks]{hyperref}
 %\usepackage[useregional=text]{datetime2}
@@ -63,10 +74,10 @@
   {} % Theorem head spec (can be left empty)
 
 \theoremstyle{problemstyle} % Apply the new style for 'problem'
-\newtheorem{problem}{Problem}
+\newtheorem{problem}{Problema}
 \newtheorem{appendixproblem}{Problem}
 \theoremstyle{definition} % Revert to 'definition' style for subsequent environments
-\newtheorem{solution}{Solution}[problem]
+\newtheorem{solution}{Solución}[problem]
 \newtheorem{appendixsolution}{Solution}[appendixproblem]
 \renewcommand{\theappendixproblem}{\thesection}
 \renewcommand{\theappendixsolution}{\theappendixproblem~(\alph{appendixsolution})}
@@ -91,46 +102,184 @@
 \author[F. I. Tappata]{Felipe. I. Tappata}
 % \address{Universidad Torcuato Di Tella, Buenos Aires, Argentina}
 % \email{ftappata@mail.utdt.edu}
-\newdate{date}{27}{06}{2025} % 2025-05-25
+\newdate{date}{14}{07}{2025} % 2025-05-25
 \date{\displaydate{date}}
 
-\title[Final Exam]{Datos de Panel: Examen Final}
+\title[Examen Final]{Datos de Panel: Examen Final}
 \begin{abstract}
   Este documento contiene la solución al examen final de la materia \emph{Datos de Panel} en la Universidad Torcuato Di Tella, primer trimestre de 2025.
   El trabajo consiste en la replicación de ciertas tablas y figuras del trabajo de \textcite{al-sadoonSimpleMethodsConsistent2019}, y un análisis de los resultados obtenidos.
   El código usado fue entregado junto a este documento, y se puede encontrar también en el repositorio \url{https://github.com/felipetappata/datos-final}.
   El software usado es Stata, con un uso auxiliar de Python y Bash para el procesamiento de \emph{output} y ayuda en la ejecución simultánea de simulaciones.
   El archivo \texttt{README.md} en la raíz del repositorio contiene instrucciones detalladas para la replicación de los resultados.
+  El texto principal está escrito en español, pero algunos términos como \enquote{bias} y \enquote{s.e.} se han dejado en inglés para evitar construcciones torpes y resaltar la correspondencia con el trabajo original.
+  Lo mismo ocurre con el código; dado que la documentación y los trabajos originales suelen estar en inglés, los comentarios e instrucciones mantienen el idioma.
 \end{abstract}
 \maketitle
-% Problem statements are enclosed in boxes, with solutions following.
-% At the cost of slight repetition, I have attempted to make the solutions self-contained.
 \begin{mdframed}
   \begin{problem}
   \label{prob:1}
   Reproduzca las tablas 1 a 3 del trabajo de Sadoon et al.
   \end{problem}
 \end{mdframed}
-\begin{solution}
+\begingroup
+\renewcommand{\thesolution}{\theproblem}
+\begin{solution} % Solution to Problem 1
+  \label{sol:1}
+
+  Para la construcción de los Cuadros~\ref{tab:table1}, \ref{tab:table2} y \ref{tab:table3}, replicamos los experimentos de Monte Carlo desarrollados por los autores.
+  El proceso generador de datos consiste en un modelo dinámico autorregresivo de primer orden con selección de muestra.
+  Específicamente, generamos la variable de resultado de interés según la ecuación de resultado:
+  \begin{equation*}
+    y_{it}^* = 2 + \rho y_{i,t-1}^* + \alpha_i + \varepsilon_{it} \quad \text{para } t = 2, \ldots, T
+  \end{equation*}
+  donde $\rho$ toma valores de $0.25$, $0.50$ y $0.75$ para capturar diferentes grados de persistencia.
+  Para el período inicial ($t = 1$), utilizamos la forma
+  \begin{equation*}
+    y_{i1}^* = \frac{2 + \alpha_i + \varepsilon_{i1}}{1 - \rho}.
+  \end{equation*}
+
+  El mecanismo de selección se modela mediante dos especificaciones alternativas.
+  La especificación estática (modelo~A) se define como:
+  \begin{equation*}
+    d_{it}^* = a - z_{it} - \eta_i - u_{it}
+  \end{equation*}
+  mientras que la especificación dinámica (modelo~B) incluye el rezago de la variable de selección:
+  \begin{equation*}
+    d_{it}^* = a - 0.5 d_{i,t-1} + z_{it} - \eta_i - u_{it}
+  \end{equation*}
+  En ambos casos, $d_{it} = \mathbf{1}[d_{it}^* > 0]$. La constante $a$ se calibra para que la probabilidad inicial de selección sea $P(d_{it}^* > 0) = 0.85$ en el modelo~A.
+  La variable exógena $z_{it}$ se distribuye normal con varianza unitaria.
+
+  La estructura de correlación entre los componentes de error se especifica mediante las ecuaciones
+  \begin{align*}
+    \alpha_i         & = \alpha_i^0 + 0.5 \eta_i,         \\
+    \varepsilon_{it} & = \varepsilon_{it}^0 + 0.5 u_{it},
+  \end{align*}
+  donde $\alpha_i^0$, $\varepsilon_{it}^0$, $\eta_i$ y $u_{it}$ son independientes con distribución normal estándar.
+  Esta parametrización implica una correlación de $0.447$ entre los componentes de error de las ecuaciones de resultado y selección.
+
+  Para cada combinación de parámetros, realizamos $500$ replicaciones con tamaños de muestra iniciales de $N = 500$ y $N = 5000$.
+  Generamos series temporales de longitud $T = 17$ a $T = 20$ y descartamos las primeras $13$ observaciones para mitigar efectos de condiciones iniciales, resultando en paneles con dimensión temporal efectiva $T = 7$.\footnote{Los autores mencionan que los resultados no cambian si se generan las $13$ observaciones adicionales y la muestra se comienza con una condición individual para cada individuo (\cite[11]{al-sadoonSimpleMethodsConsistent2019}).}
+  Dado que el estimador requiere al menos tres observaciones consecutivas del mismo régimen, una fracción considerable de observaciones no contribuye a la identificación, resultando en una pérdida efectiva de aproximadamente un tercio de las observaciones aun con solo $15\%$ de selección inicial.
+
+  Evaluamos el desempeño de dos estimadores bien conocidos: el estimador GMM-IV en primeras diferencias de Arellano-Bond (AB) y el estimador de sistema (SyS) que combina ecuaciones en niveles y primeras diferencias.
+  Para las ecuaciones en primeras diferencias utilizamos como instrumentos todos los rezagos disponibles desde $t-2$ hacia atrás, mientras que para las ecuaciones en niveles empleamos las primeras diferencias rezagadas de la variable dependiente como instrumentos adicionales.
+
+  La implementación computacional se encuentra en los \emph{scripts} de Stata: \texttt{endogenous.do} y \texttt{nonendogenous.do}.
+  Para el estimador de Arellano-Bond, empleamos el comando:
+  \begin{lstlisting}[language=Stata]
+xtabond2 y L.y, gmm(L.y, collapse) nolevel
+\end{lstlisting}
+  La opción \texttt{collapse} es utilizada por los autores, siguiendo las recomendaciones de \textcite{roodmanHowXtabond2Introduction2009}.\footnote{Comentan, de todos modos, que el problema de proliferación de instrumentos no es un problema en la aplicación dada, debido a la cantidad reducida de períodos (\cite[12]{al-sadoonSimpleMethodsConsistent2019})}
+  Para el estimador de sistema, utilizamos:
+  \begin{lstlisting}[language=Stata]
+xtabond2 y L.y, gmm(L.y, lag(2 .)) iv(L.D.y, equation(level))
+\end{lstlisting}
+  donde \texttt{lag(2 .)} especifica el uso de rezagos desde $t-2$ hacia atrás como instrumentos GMM, y \texttt{iv(L.D.y, equation(level))} incluye la primera diferencia rezagada como instrumento IV para la ecuación en niveles, siguiendo la propuesta de \textcite{arellanoAnotherLookInstrumental1995}.
+
+  El Cuadro~\ref{tab:table1} muestra los resultados de sesgo promedio y error estándar para los dos estimadores, para experimentos Monte Carlo con diferentes valores de $\rho$ y tamaños de muestra, para las dos especificaciones del modelo de selección, tanto para selección endógena y no.\footnote{Para generar este cuadro, se corren los scripts \texttt{run\_parallel\_N500.sh} y \texttt{run\_parallel\_N5000.sh} para ejecutar en simultáneo diferentes instancias de \texttt{endogenous.do} y \texttt{nonendogenous.do} con los parámetros correspondientes. Los resultados se guardan en archivos \texttt{csv} y luego se procesan con el script \texttt{make\_table\_1.py} para generar el cuadro.}
+
   \begin{table}[htbp]
     \centering
     \caption{Sesgo promedio en el modelo $\ar(1)$ ($T = 7$, $500$~replicaciones)}
     \label{tab:table1}
     \input{../code/output/tables/table1.tex}
   \end{table}
+
+  Los Cuadros~\ref{tab:table2} y \ref{tab:table3} son el resultado de un análisis de sensibilidad para los tamaños de muestra chico ($N = 500$) y grande ($N = 5000$), respectivamente.
+  El análisis de sensibilidad, o robustez, consiste en diseñar cinco \enquote{experimentos} que modifican el escenario original para mostrar que los resultados no se modifican significativamente.
+  Los experimentos son los siguientes (\cite[16,17]{al-sadoonSimpleMethodsConsistent2019}).
+  \begin{enumerate}[label=\textbf{Experimento \Roman*:}, leftmargin=*, itemsep=0.5em]
+    \item \textbf{$\boldsymbol{T}$ corto.} Consiste en reducir la máxima dimension longitudinal del panel observado de $T = 7$ a $T = 4$. El efecto sobre el sesgo medio es chico para ambos estimadores y ambos tamaños muestrales.
+    \item \textbf{Más selección.} Consiste en aumentar el grado de selección de muestra de $0.15$ a $0.25$. Aumenta el sesgo medio muy levemente, y aumenta la varianza por la reducción en la cantidad de observaciones.
+    \item \textbf{Incrementar el ratio de varianzas.} Consiste en aumentar el ratio de la varianza del componente de heterogeneidad individual respecto a la varianza del componente variante en el tiempo de la ecuación de resultado. Esto es, $\sigma_\eta/\sigma_\varepsilon = 2$ en lugar de $1$. No tiene un efecto importante sobre el sesgo medio para ningún estimador. El efecto es más chico cuando el tamaño muestral es más grande (Cuadro~\ref{tab:table3} vs. Cuadro~\ref{tab:table2}).
+    \item \textbf{Reducir la correlación de errores.} Consiste en reducir el parámetro de correlación de $0.5$ a $0.25$. Se reduce el sesgo medio para ambos estimadores para los dos tamaños muestrales y todos los parámetros autorregresivos.
+    \item \textbf{Componentes del error no estacionarios y variantes en el tiempo.} El sesgo medio se reduce significativamente, lo cual es especialmente importante cuando el tamaño muestral inicial es chico.
+  \end{enumerate}
+
+  \begin{table}[htbp]
+    \begin{threeparttable}[htbp]
+      \centering
+      \caption{Sesgo promedio en el modelo $\ar(1)$. Análisis de sensibilidad para $N$ chico}
+      \label{tab:table2}
+      \input{../code/output/tables/table2.tex}
+      \begin{tablenotes}[flushleft]
+        \item [1] $T = 7$, excepto en el experimento I.
+        \item [2] $N = 500$.
+        \item [3] Numero de replicaciones: $500$.
+      \end{tablenotes}
+    \end{threeparttable}
+  \end{table}
+  \begin{table}[htbp]
+    \begin{threeparttable}[htbp]
+      \centering
+      \caption{Sesgo promedio en el modelo $\ar(1)$. Análisis de sensibilidad para $N$ grande}
+      \label{tab:table3}
+      \input{../code/output/tables/table3.tex}
+      \begin{tablenotes}[flushleft]
+        \item [1] $T = 7$, excepto en el experimento I.
+        \item [2] $N = 5000$.
+        \item [3] Numero de replicaciones: $500$.
+      \end{tablenotes}
+    \end{threeparttable}
+  \end{table}
 \end{solution}
+\endgroup
 \begin{mdframed}
   \begin{problem}
   \label{prob:2}
   Reproduzca la figura~1 del trabajo de Sadoon et al.
   \end{problem}
 \end{mdframed}
+\begingroup
+\renewcommand{\thesolution}{\theproblem}
+\begin{solution} % Solution to Problem 2
+  \label{sol:2}
+
+  \begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+      \centering
+      \resizebox{\textwidth}{!}{\input{../code/output/fig1/panel1_bias_rho025.tex}}
+      \caption{Sesgo medio, $\rho = 0.25$}
+      \label{fig:panel1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+      \centering
+      \resizebox{\textwidth}{!}{\input{../code/output/fig1/panel2_bias_rho050.tex}}
+      \caption{Sesgo medio, $\rho = 0.50$}
+      \label{fig:panel2}
+    \end{subfigure}
+
+    \vfill
+
+    \begin{subfigure}[b]{0.5\textwidth}
+      \centering
+      \resizebox{\textwidth}{!}{\input{../code/output/fig1/panel3_bias_rho075.tex}}
+      \caption{Sesgo medio, $\rho = 0.75$}
+      \label{fig:panel3}
+    \end{subfigure}
+
+    \caption{Sesgo promedio de estimadores AB y System en la muestra completa ($N\times T$ observaciones) y la muestra con selección endógena}
+    \label{fig:fig1}
+  \end{figure}
+
+\end{solution}
+\endgroup
 \begin{mdframed}
   \begin{problem}
   \label{prob:3}
   Comente sobre el sesgo promedio de las estimaciones a medida que aumenta el valor del parámetro de persistencia $\rho$ para ambos estimadores: Arellano-Bond y SyS. ¿Varían las conclusiones al trabajar con muestras pequeñas o grandes?
-
   \end{problem}
 \end{mdframed}
+\begingroup
+\renewcommand{\thesolution}{\theproblem}
+\begin{solution} % Solution to Problem 3
+  \label{sol:3}
+
+\end{solution}
+\endgroup
 \printbibliography
 \end{document}
