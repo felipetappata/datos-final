@@ -13,6 +13,7 @@ Date: January 2025
 import pandas as pd
 import os
 import glob
+import re
 from pathlib import Path
 
 # Configuration
@@ -20,14 +21,43 @@ PARTIAL_OUTPUT_DIR = "output/partial"
 TABLE_OUTPUT_DIR = "output/tables"
 TABLE_OUTPUT_FILE = "table1.tex"
 
-def format_number(value):
+def find_first_significant_decimal(value):
     """
-    Format numbers for LaTeX with proper math mode and decimal handling.
-    Shows 5 decimal places, unless the first non-zero digit occurs after the 5th decimal,
-    in which case use scientific notation.
+    Find the position of the first significant (non-zero) digit after the decimal point.
+    
+    Args:
+        value: Numeric value
+    
+    Returns:
+        Position of first significant digit (1-indexed), or None if no significant decimals
+    """
+    if pd.isna(value) or value == 0:
+        return None
+    
+    # Get the decimal part
+    decimal_part = abs(value) % 1
+    if decimal_part == 0:
+        return None
+    
+    # Convert to string and find first non-zero digit after decimal
+    decimal_str = f"{decimal_part:.10f}"  # Use more precision to be safe
+    decimal_str = decimal_str[2:]  # Remove "0."
+    
+    for i, digit in enumerate(decimal_str):
+        if digit != '0':
+            return i + 1  # 1-indexed position
+    
+    return None
+
+def format_number_enhanced(value, underline_significant=True, use_centered_alignment=True):
+    """
+    Enhanced number formatting with optional underlining of first significant decimal
+    and centered alignment that preserves decimal alignment.
     
     Args:
         value: Numeric value to format
+        underline_significant: Whether to underline the first significant decimal
+        use_centered_alignment: Whether to use centered alignment (vs math mode)
     
     Returns:
         Formatted string for LaTeX
@@ -37,30 +67,67 @@ def format_number(value):
     
     # Handle zero
     if value == 0:
-        return "$0.00000$"
+        if use_centered_alignment:
+            return "$\\phantom{-}0.00000$"  # Add phantom minus for alignment in math mode
+        else:
+            return "$0.00000$"
     
     # Check if we need scientific notation
-    # If the first non-zero digit is beyond the 5th decimal place, use scientific notation
     if abs(value) < 1e-5 and abs(value) > 0:
         # Use scientific notation
         formatted = f"{value:.2e}"
-        # Convert to LaTeX scientific notation
         if "e" in formatted:
             base, exp = formatted.split("e")
             exp = int(exp)
-            # Handle negative signs in base
-            if base.startswith('-'):
-                base = f"-{base[1:]}"
-            return f"${base} \\times 10^{{{exp}}}$"
+            if use_centered_alignment:
+                if base.startswith('-'):
+                    return f"${base} \\times 10^{{{exp}}}$"
+                else:
+                    return f"$\\phantom{{-}}{base} \\times 10^{{{exp}}}$"
+            else:
+                if base.startswith('-'):
+                    return f"${base} \\times 10^{{{exp}}}$"
+                else:
+                    return f"${base} \\times 10^{{{exp}}}$"
     
     # Regular formatting with 5 decimal places
     formatted = f"{value:.5f}"
     
-    # Handle negative signs properly for LaTeX
-    if formatted.startswith('-'):
-        return f"$-{formatted[1:]}$"
+    if underline_significant:
+        # Find the first significant decimal
+        sig_pos = find_first_significant_decimal(value)
+        if sig_pos is not None:
+            # Split the formatted number
+            if '.' in formatted:
+                integer_part, decimal_part = formatted.split('.')
+                if sig_pos <= len(decimal_part):
+                    # Underline the significant digit
+                    sig_digit = decimal_part[sig_pos-1]
+                    new_decimal = (decimal_part[:sig_pos-1] + 
+                                 f"\\underline{{{sig_digit}}}" + 
+                                 decimal_part[sig_pos:])
+                    formatted = f"{integer_part}.{new_decimal}"
+    
+    if use_centered_alignment:
+        # For centered alignment, add phantom minus to positive numbers for consistent spacing
+        # Always wrap in math mode for proper formatting
+        if formatted.startswith('-'):
+            return f"${formatted}$"
+        else:
+            return f"$\\phantom{{-}}{formatted}$"
     else:
-        return f"${formatted}$"
+        # Handle negative signs properly for LaTeX math mode
+        if formatted.startswith('-'):
+            return f"$-{formatted[1:]}$"
+        else:
+            return f"${formatted}$"
+
+def format_number(value):
+    """
+    Original format_number function for backward compatibility.
+    Uses the enhanced version with default settings.
+    """
+    return format_number_enhanced(value, underline_significant=False, use_centered_alignment=False)
 
 def read_simulation_results():
     """
@@ -158,6 +225,7 @@ def check_missing_files():
 def generate_latex_table(results, output_path="output/tables/table1.tex"):
     """
     Generate the LaTeX table replicating Table 1 from Al Sadoon et al. (2019).
+    Uses decimal alignment and underlining of first significant decimal.
     
     Args:
         results: Dictionary with simulation results
@@ -169,7 +237,8 @@ def generate_latex_table(results, output_path="output/tables/table1.tex"):
     
     latex_content = []
     
-    # Table header - simplified for babel compatibility
+    # Table header with centered columns for numeric data
+    # Use regular centered columns (c) instead of decimal alignment (D)
     latex_content.append("\\begin{tabular}{@{}ccc*{4}{c}@{}}")
     latex_content.append("\\toprule")
     latex_content.append("& & & \\multicolumn{2}{c}{No endogenous} & \\multicolumn{2}{c}{Endogenous} \\\\")
@@ -184,12 +253,9 @@ def generate_latex_table(results, output_path="output/tables/table1.tex"):
     sample_sizes = [500, 5000]
     rho_values = [0.25, 0.50, 0.75]
     
-    def format_simple_number(value):
-        """Format number simply for babel compatibility"""
-        formatted = format_number(value)
-        if formatted == "---":
-            return "---"
-        return formatted
+    def format_enhanced_number(value):
+        """Format number with centered alignment and significant digit underlining"""
+        return format_number_enhanced(value, underline_significant=True, use_centered_alignment=True)
     
     for model in models:
         for N in sample_sizes:
@@ -206,20 +272,16 @@ def generate_latex_table(results, output_path="output/tables/table1.tex"):
                 nonendo_results = results.get(nonendo_key, {})
                 endo_results = results.get(endo_key, {})
                 
-                # Format the values simply (babel will handle decimal conversion)
-                ab_bias_nonendo = format_simple_number(nonendo_results.get('ab_bias', pd.NA))
-                ab_se_nonendo = format_simple_number(nonendo_results.get('ab_se', pd.NA))
-                sys_bias_nonendo = format_simple_number(nonendo_results.get('sys_bias', pd.NA))
-                sys_se_nonendo = format_simple_number(nonendo_results.get('sys_se', pd.NA))
+                # Format the values with enhanced formatting
+                ab_bias_nonendo = format_enhanced_number(nonendo_results.get('ab_bias', pd.NA))
+                ab_se_nonendo = format_enhanced_number(nonendo_results.get('ab_se', pd.NA))
+                sys_bias_nonendo = format_enhanced_number(nonendo_results.get('sys_bias', pd.NA))
+                sys_se_nonendo = format_enhanced_number(nonendo_results.get('sys_se', pd.NA))
                 
-                ab_bias_endo = format_simple_number(endo_results.get('ab_bias', pd.NA))
-                ab_se_endo = format_simple_number(endo_results.get('ab_se', pd.NA))
-                sys_bias_endo = format_simple_number(endo_results.get('sys_bias', pd.NA))
-                sys_se_endo = format_simple_number(endo_results.get('sys_se', pd.NA))
-                
-                # Special handling for scientific notation
-                if abs(nonendo_results.get('sys_bias', 0)) < 1e-6 and nonendo_results.get('sys_bias', 0) != 0:
-                    sys_bias_nonendo = format_number(nonendo_results.get('sys_bias', pd.NA), is_scientific=True)
+                ab_bias_endo = format_enhanced_number(endo_results.get('ab_bias', pd.NA))
+                ab_se_endo = format_enhanced_number(endo_results.get('ab_se', pd.NA))
+                sys_bias_endo = format_enhanced_number(endo_results.get('sys_bias', pd.NA))
+                sys_se_endo = format_enhanced_number(endo_results.get('sys_se', pd.NA))
                 
                 # Format rho value in math mode
                 rho_str = f"$.{int(rho*100):02d}$" if rho != 0.75 else "$.75$"
@@ -313,6 +375,10 @@ def main():
     print("Required LaTeX packages:")
     print("\\usepackage{booktabs}  % for \\toprule, \\midrule, \\bottomrule")
     print("\\usepackage{array}     % for enhanced tabular environments")
+    print("\\usepackage{ulem}      % for \\underline (if not already loaded)")
+    print()
+    print("Note: Numbers are formatted with phantom spacing for alignment and first significant")
+    print("      decimal digits are underlined for better readability.")
 
 if __name__ == "__main__":
     main()

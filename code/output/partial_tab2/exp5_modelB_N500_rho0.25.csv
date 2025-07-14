@@ -1,0 +1,2 @@
+N,rho,AB_bias,AB_se,SYS_bias,SYS_se,AB_valid,SYS_valid,experiment,model,experiment_type,date_time
+500,.25,-.0013417653,.057505731,-.0050144722,.047859441,500,500,5,B,exp5_nonstationary_errors,14 Jul 2025 00:29:13

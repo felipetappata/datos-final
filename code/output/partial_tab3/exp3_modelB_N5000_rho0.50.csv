@@ -1,0 +1,2 @@
+N,rho,AB_bias,AB_se,SYS_bias,SYS_se,AB_valid,SYS_valid,experiment,model,experiment_type,date_time
+5000,.5,-.000028882623,.02959265,-.029171575,.019791018,500,500,3,B,exp3_variance_ratio,14 Jul 2025 16:55:11

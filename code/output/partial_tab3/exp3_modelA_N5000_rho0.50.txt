@@ -1,0 +1,27 @@
+=========================================================================
+EXPERIMENT 3: INCREASING RATIO OF VARIANCES - TABLE 2 REPLICATION
+AL SADOON ET AL. (2019) - ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Experiment: Increasing ratio of variances (σ_α²/σ_ε² = 2)
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 5000
+Autoregressive Parameter (rho): 0.50
+Number of Replications: 500
+Selection Type: Endogenous (theta=0.5, vartheta=0.5)
+Variance Parameters: σ_α0=1, σ_ε0=1, σ_η=2
+Date: 14 Jul 2025 16:53:39
+=========================================================================
+
+ESTIMATION RESULTS:
+-------------------
+AB Estimator:
+  Bias (mean - true): -0.001689
+  Standard Error:  0.029066
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true): -0.022684
+  Standard Error:  0.018080
+  Valid Replications:       500 / 500
+
+=========================================================================

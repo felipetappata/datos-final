@@ -1,0 +1,25 @@
+=========================================================================
+AL SADOON ET AL. (2019) REPLICATION - ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 3500
+Autoregressive Parameter (rho): 0.25
+Number of Replications: 500
+Selection Type: Endogenous (theta=0.5, vartheta=0.5)
+Implied Correlation: 0.447
+Date: 14 Jul 2025 03:49:59
+=========================================================================
+
+ESTIMATION RESULTS (SELECTED SAMPLE):
+---------—----------
+AB Estimator:
+  Bias (mean - true):  0.000710
+  Standard Error:  0.022309
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true): -0.003897
+  Standard Error:  0.016823
+  Valid Replications:       500 / 500
+
+=========================================================================

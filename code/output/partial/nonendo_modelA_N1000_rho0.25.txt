@@ -1,0 +1,28 @@
+=========================================================================
+AL SADOON ET AL. (2019) REPLICATION - NON-ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 1000
+Autoregressive Parameter (rho): 0.25
+Number of Replications: 500
+Selection Type: Non-endogenous (theta=0, vartheta=0)
+Date: 14 Jul 2025 02:02:47
+=========================================================================
+
+ESTIMATION RESULTS:
+---------—----------
+AB Estimator:
+  Bias (mean - true): -0.002978
+  Standard Error:  0.046419
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true):  0.001468
+  Standard Error:  0.030155
+  Valid Replications:       500 / 500
+
+Paper Predictions (Non-endogenous selection):
+  AB: Should be approximately unbiased
+  SYS: Should be approximately unbiased
+
+=========================================================================

@@ -1,0 +1,26 @@
+=========================================================================
+EXPERIMENT 2: MORE SAMPLE SELECTION (25%) - TABLE 2 REPLICATION
+AL SADOON ET AL. (2019) - ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Experiment: More sample selection (25% instead of baseline 15%)
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 5000
+Autoregressive Parameter (rho): 0.75
+Number of Replications: 500
+Selection Type: Endogenous (theta=0.5, vartheta=0.5)
+Date: 14 Jul 2025 16:37:23
+=========================================================================
+
+ESTIMATION RESULTS:
+-------------------
+AB Estimator:
+  Bias (mean - true): -0.004516
+  Standard Error:  0.050806
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true): -0.023582
+  Standard Error:  0.023823
+  Valid Replications:       500 / 500
+
+=========================================================================

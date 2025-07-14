@@ -1,0 +1,27 @@
+=========================================================================
+EXPERIMENT 4: REDUCING CORRELATION OF ERRORS - TABLE 2 REPLICATION
+AL SADOON ET AL. (2019) - ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Experiment: Reducing correlation of errors (correlation parameter = 0.25)
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 5000
+Autoregressive Parameter (rho): 0.75
+Number of Replications: 500
+Selection Type: Endogenous (theta=0.25, vartheta=0.25)
+Implied Correlation: 0.243 (vs baseline 0.447)
+Date: 14 Jul 2025 17:30:31
+=========================================================================
+
+ESTIMATION RESULTS:
+-------------------
+AB Estimator:
+  Bias (mean - true): -0.008644
+  Standard Error:  0.061192
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true): -0.005934
+  Standard Error:  0.061192
+  Valid Replications:       500 / 500
+
+=========================================================================

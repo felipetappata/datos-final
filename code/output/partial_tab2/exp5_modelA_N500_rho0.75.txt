@@ -1,0 +1,28 @@
+=========================================================================
+EXPERIMENT 5: NON-STATIONARY TIME-VARYING ERRORS - TABLE 2 REPLICATION
+AL SADOON ET AL. (2019) - ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Experiment: Non-stationary time-varying error components
+- Time-varying variance: εᵢₜ or uᵢₜ multiplied by Bernoulli(1,2)
+- Time-varying correlation: ϑ multiplied by {0.5, 1, 2}
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 500
+Autoregressive Parameter (rho): 0.75
+Number of Replications: 500
+Selection Type: Endogenous with time-varying parameters
+Date: 14 Jul 2025 00:29:01
+=========================================================================
+
+ESTIMATION RESULTS:
+-------------------
+AB Estimator:
+  Bias (mean - true): -0.018786
+  Standard Error:  0.098073
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true): -0.017438
+  Standard Error:  0.055432
+  Valid Replications:       500 / 500
+
+=========================================================================

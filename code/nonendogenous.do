@@ -10,9 +10,9 @@
    stata -b do nonendogenous.do N model rho
    
    Where:
-   - N: Sample size (500 or 5000)
+   - N: Sample size (>= 200)
    - model: Selection model (A=static, B=dynamic)  
-   - rho: Autoregressive parameter (0.25, 0.50, 0.75)
+   - rho: Autoregressive parameter (>= 0)
    
    Example: stata -b do nonendogenous.do 500 A 0.25
    
@@ -30,7 +30,7 @@ mata: mata set matafavor speed, perm
 // Parse command line arguments
 if "`1'" == "" | "`2'" == "" | "`3'" == "" {
     display as error "Usage: stata -b do nonendogenous.do N model rho"
-    display as error "Where N={500,5000}, model={A,B}, rho={0.25,0.50,0.75}"
+    display as error "Where N>=200, model={A,B}, rho>=0"
     exit 198
 }
 
@@ -39,16 +39,16 @@ local model `2'
 local rho `3'
 
 // Validate inputs
-if !inlist(`N', 500, 5000) {
-    display as error "N must be 500 or 5000"
+if `N' < 200 {
+    display as error "N must be >= 200"
     exit 198
 }
 if !inlist("`model'", "A", "B") {
     display as error "Model must be A (static) or B (dynamic)"
     exit 198
 }
-if !inlist(`rho', 0.25, 0.50, 0.75) {
-    display as error "rho must be 0.25, 0.50, or 0.75"
+if `rho' < 0 {
+    display as error "rho must be >= 0"
     exit 198
 }
 
@@ -67,7 +67,7 @@ local T_discard 13           // Periods to discard for initial conditions
 local reps 500               // Number of Monte Carlo replications
 
 // Selection equation parameters  
-local a_param 1.8            // Set so P(d_it* > 0) = 0.85 (15% selection), using using a=√3*Φ^−1(0.85)=1.794
+local a_param 1.794            // Set so P(d_it* > 0) = 0.85 (15% selection), using using a=√3*Φ^−1(0.85)=1.794
 local sigma_z 1              // Standard deviation of z_it ~ N(0,1)
 local sigma_eta 1            // Standard deviation of eta_i ~ N(0,1)  
 local sigma_u 1              // Standard deviation of u_it ~ N(0,1)
@@ -148,15 +148,22 @@ forvalues rep = 1/`reps' {
         if "`model'" == "A" {
             // Static selection: d_it* = a - z_it - eta_i - u_it
             gen double d_star = `a_param' - z_it - eta_i - u_it
+            gen byte d = (d_star > 0)
         }
         else if "`model'" == "B" {
             // Dynamic selection: d_it* = a - 0.5*d_it-1 + z_it - eta_i - u_it
-            gen double d_star = `a_param' + z_it - eta_i - u_it
+            // Need to handle sequential dependency properly with explicit loop
+            gen double d_star = .
+            gen byte d = .
+            gen byte ditm1 = 1  // Initial value for d_{t-1} to start the chain
+            
             sort id t
-            by id: replace d_star = `a_param' - 0.5*L.d + z_it - eta_i - u_it if t > 1
+            forvalues tt = 1/`T_total' {
+                replace ditm1 = d[_n-1] if t == `tt' & t > 1
+                replace d_star = `a_param' - 0.5*ditm1 + z_it - eta_i - u_it if t == `tt'
+                replace d = (d_star > 0) if t == `tt'
+            }
         }
-        
-        gen byte d = (d_star > 0)
         
         // ================================================================
         // OUTCOME EQUATION (AR(1) Process)

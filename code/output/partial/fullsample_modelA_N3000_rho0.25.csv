@@ -1,0 +1,2 @@
+N,rho,AB_bias,AB_se,SYS_bias,SYS_se,AB_valid,SYS_valid,model,selection_type,date_time
+3000,.25,-.0010604858,.020040812,.00055131677,.015309927,500,500,A,full_sample,14 Jul 2025 03:42:16

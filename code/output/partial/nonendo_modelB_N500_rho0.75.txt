@@ -6,19 +6,19 @@ Sample Size (N): 500
 Autoregressive Parameter (rho): 0.75
 Number of Replications: 500
 Selection Type: Non-endogenous (theta=0, vartheta=0)
-Date:  1 Jul 2025 13:55:20
+Date: 14 Jul 2025 00:08:37
 =========================================================================
 
 ESTIMATION RESULTS:
 ---------—----------
 AB Estimator:
-  Bias (mean - true): -0.218364
-  Standard Error:  0.348156
+  Bias (mean - true): -0.142356
+  Standard Error:  0.293332
   Valid Replications:       500 / 500
 
 System GMM Estimator:
-  Bias (mean - true):  0.013529
-  Standard Error:  0.071432
+  Bias (mean - true):  0.006683
+  Standard Error:  0.061504
   Valid Replications:       500 / 500
 
 Paper Predictions (Non-endogenous selection):

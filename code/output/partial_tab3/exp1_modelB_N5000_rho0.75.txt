@@ -1,0 +1,26 @@
+=========================================================================
+EXPERIMENT 1: VERY SHORT T (T=4) - TABLE 2 REPLICATION
+AL SADOON ET AL. (2019) - ENDOGENOUS SELECTION RESULTS
+=========================================================================
+Experiment: Very short T (T=4 instead of baseline T=7)
+Model: B (Static=A, Dynamic=B)
+Sample Size (N): 5000
+Autoregressive Parameter (rho): 0.75
+Number of Replications: 500
+Selection Type: Endogenous (theta=0.5, vartheta=0.5)
+Date: 14 Jul 2025 16:28:42
+=========================================================================
+
+ESTIMATION RESULTS:
+-------------------
+AB Estimator:
+  Bias (mean - true):  0.003749
+  Standard Error:  0.106513
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true): -0.031851
+  Standard Error:  0.045152
+  Valid Replications:       500 / 500
+
+=========================================================================

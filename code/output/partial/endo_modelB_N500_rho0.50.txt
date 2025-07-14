@@ -7,19 +7,19 @@ Autoregressive Parameter (rho): 0.50
 Number of Replications: 500
 Selection Type: Endogenous (theta=0.5, vartheta=0.5)
 Implied Correlation: 0.447
-Date:  1 Jul 2025 13:55:20
+Date: 14 Jul 2025 00:08:36
 =========================================================================
 
 ESTIMATION RESULTS:
 ---------—----------
 AB Estimator:
-  Bias (mean - true):  0.064687
-  Standard Error:  0.116902
+  Bias (mean - true): -0.014719
+  Standard Error:  0.099362
   Valid Replications:       500 / 500
 
 System GMM Estimator:
-  Bias (mean - true): -0.001343
-  Standard Error:  0.070185
+  Bias (mean - true): -0.014570
+  Standard Error:  0.059992
   Valid Replications:       500 / 500
 
 Paper Predictions (Endogenous selection):

@@ -1,0 +1,2 @@
+N,rho,AB_bias,AB_se,SYS_bias,SYS_se,AB_valid,SYS_valid,model,selection_type,date_time
+4000,.25,-.0012876397,.02184077,-.0057641915,.015229658,500,500,A,endogenous,14 Jul 2025 03:50:13

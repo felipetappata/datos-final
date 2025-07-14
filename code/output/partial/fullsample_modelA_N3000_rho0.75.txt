@@ -1,0 +1,24 @@
+=========================================================================
+AL SADOON ET AL. (2019) REPLICATION - FULL SAMPLE RESULTS
+=========================================================================
+Model: A (Static=A, Dynamic=B)
+Sample Size (N): 3000
+Autoregressive Parameter (rho): 0.75
+Number of Replications: 500
+Selection Type: None (Full N x T sample)
+Date: 14 Jul 2025 14:45:22
+=========================================================================
+
+ESTIMATION RESULTS (FULL SAMPLE):
+---------—----------
+AB Estimator:
+  Bias (mean - true): -0.008962
+  Standard Error:  0.068817
+  Valid Replications:       500 / 500
+
+System GMM Estimator:
+  Bias (mean - true):  0.000585
+  Standard Error:  0.019102
+  Valid Replications:       500 / 500
+
+=========================================================================

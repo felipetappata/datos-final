@@ -1,0 +1,2 @@
+N,rho,AB_bias,AB_se,SYS_bias,SYS_se,AB_valid,SYS_valid,experiment,model,experiment_type,date_time
+500,.25,-.0081389695,.06777291,-.00042762433,.045930069,500,500,4,A,exp4_reduced_correlation,14 Jul 2025 00:24:48
