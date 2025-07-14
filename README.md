@@ -2,7 +2,7 @@
 
 This project replicates the Monte Carlo Simulations from Section 3 of Sadoon et al. (2019).
 
-**Note: This respository will be archived on 2025-08-14 or afterwards.**
+**Note: This repository will be archived on 2025-08-14 or afterwards.**
 
 ## Instructions
 
