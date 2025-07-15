@@ -11,7 +11,13 @@
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{threeparttable} % for table notes
-\usepackage[backend=biber,style=authoryear,natbib=true,maxcitenames=2,mincitenames=1,maxbibnames=99]{biblatex}
+\usepackage[backend=biber,
+            style=authoryear,
+            natbib=true,
+            maxcitenames=2,
+            mincitenames=1,
+            maxbibnames=99,
+            sorting=nyt]{biblatex}
 \addbibresource[label=main]{references.bib}
 \usepackage{mdframed}
 \usepackage{amsfonts}
@@ -95,8 +101,11 @@
 \DeclareMathOperator{\garch}{GARCH}
 \DeclareMathOperator{\plim}{p\!\lim}
 
-% Packages for quarto
 
+\makeatletter
+\renewcommand{\@setdate}{\datename~\@date}
+\renewcommand{\datename}{\textit{Fecha:}}
+\makeatother
 
 \begin{document}
 \author[F. I. Tappata]{Felipe. I. Tappata}
@@ -190,13 +199,38 @@ xtabond2 y L.y, gmm(L.y, lag(2 .)) iv(L.D.y, equation(level))
   Los Cuadros~\ref{tab:table2} y \ref{tab:table3} son el resultado de un análisis de sensibilidad para los tamaños de muestra chico ($N = 500$) y grande ($N = 5000$), respectivamente.
   El análisis de sensibilidad, o robustez, consiste en diseñar cinco \enquote{experimentos} que modifican el escenario original para mostrar que los resultados no se modifican significativamente.
   Los experimentos son los siguientes (\cite[16,17]{al-sadoonSimpleMethodsConsistent2019}).
-  \begin{enumerate}[label=\textbf{Experimento \Roman*:}, leftmargin=*, itemsep=0.5em]
-    \item \textbf{$\boldsymbol{T}$ corto.} Consiste en reducir la máxima dimension longitudinal del panel observado de $T = 7$ a $T = 4$. El efecto sobre el sesgo medio es chico para ambos estimadores y ambos tamaños muestrales.
-    \item \textbf{Más selección.} Consiste en aumentar el grado de selección de muestra de $0.15$ a $0.25$. Aumenta el sesgo medio muy levemente, y aumenta la varianza por la reducción en la cantidad de observaciones.
-    \item \textbf{Incrementar el ratio de varianzas.} Consiste en aumentar el ratio de la varianza del componente de heterogeneidad individual respecto a la varianza del componente variante en el tiempo de la ecuación de resultado. Esto es, $\sigma_\eta/\sigma_\varepsilon = 2$ en lugar de $1$. No tiene un efecto importante sobre el sesgo medio para ningún estimador. El efecto es más chico cuando el tamaño muestral es más grande (Cuadro~\ref{tab:table3} vs. Cuadro~\ref{tab:table2}).
-    \item \textbf{Reducir la correlación de errores.} Consiste en reducir el parámetro de correlación de $0.5$ a $0.25$. Se reduce el sesgo medio para ambos estimadores para los dos tamaños muestrales y todos los parámetros autorregresivos.
-    \item \textbf{Componentes del error no estacionarios y variantes en el tiempo.} El sesgo medio se reduce significativamente, lo cual es especialmente importante cuando el tamaño muestral inicial es chico.
+  \begin{enumerate}[label=\textbf{Experimento \Roman*:}, ref=\Roman*, leftmargin=*, itemsep=0.5em]
+    \item \label{exp:short-T} \textbf{$\boldsymbol{T}$ corto.} Consiste en reducir la máxima dimensión longitudinal del panel observado de $T = 7$ a $T = 4$, incrementando el número de observaciones descartadas de 13 a 16. El efecto sobre el sesgo medio es moderado para ambos estimadores y ambos tamaños muestrales, pero incrementa sustancialmente la varianza, especialmente para el estimador AB con valores altos de $\rho$.
+    \item \label{exp:more-selection} \textbf{Más selección.} Consiste en aumentar el grado de selección de muestra del $15\%$ al $25\%$, modificando la constante $a$ de $1.794$ a aproximadamente $1.168$. Aumenta el sesgo medio muy levemente y la varianza por la reducción en la cantidad de observaciones disponibles.
+    \item \label{exp:variance-ratio} \textbf{Incrementar el ratio de varianzas.} Consiste en aumentar el ratio de la varianza del componente de heterogeneidad individual respecto a la varianza del componente variante en el tiempo de la ecuación de resultado, estableciendo $\sigma_\eta = 2$ en lugar de $\sigma_\eta = 1$. El efecto sobre el sesgo medio es limitado para ambos estimadores, siendo más pronunciado en muestras pequeñas.
+    \item \label{exp:reduce-correlation} \textbf{Reducir la correlación de errores.} Consiste en reducir los parámetros de correlación de $\theta = \vartheta = 0.5$ a $\theta = \vartheta = 0.25$. Se reduce el sesgo medio para ambos estimadores en todos los escenarios considerados, confirmando que menor correlación entre componentes de error facilita la estimación.
+    \item \label{exp:time-varying} \textbf{Componentes del error no estacionarios y variantes en el tiempo.} Introduce heterogeneidad temporal multiplicando $u_{it}$ por un proceso Bernoulli que toma valores 1 o 2, y permitiendo que el parámetro $\vartheta$ varíe aleatoriamente entre $0.5$, $1$ y $2$. El sesgo medio se reduce significativamente para ambos estimadores, siendo el efecto más notable en muestras pequeñas.
   \end{enumerate}
+
+  La implementación de estos experimentos se realiza mediante scripts especializados (llamados en el repositorio \texttt{experiment1.do} a \texttt{experiment5.do}) que modifican parámetros específicos del proceso generador de datos base.
+  Por ejemplo, el Experimento~\ref{exp:short-T} modifica la variable \texttt{T\_discard} de 13 a 16, mientras que el Experimento~\ref{exp:more-selection} recalcula la constante $a$ para lograr la probabilidad de selección deseada.
+  El Experimento~\ref{exp:variance-ratio} simplemente cambia \texttt{sigma\_eta} de 1 a 2, y el Experimento~\ref{exp:reduce-correlation} reduce \texttt{theta\_param} y \texttt{vartheta\_param} de 0.5 a 0.25.
+  El Experimento~\ref{exp:time-varying} es el más complejo, introduciendo variabilidad temporal mediante:
+  \begin{lstlisting}[language=Stata, basicstyle=\ttfamily]
+gen bernoulli_process = (runiform() > 0.5) + 1
+replace u_it = u_it * bernoulli_process
+gen vartheta_random = (0.5, 1, 2)[ceil(runiform()*3)]
+replace eps_it = eps_i0 + vartheta_random * u_it
+\end{lstlisting}
+
+  Como podemos observar en los cuadros, los resultados confirman las conclusiones principales del trabajo original.
+  En el Cuadro~\ref{tab:table1}, el estimador AB muestra un sesgo que crece sistemáticamente con el parámetro autorregresivo $\rho$ cuando el tamaño muestral es pequeño ($N = 500$), llegando a ser considerable cuando $\rho = 0.75$.
+  Al incrementar el tamaño muestral a $N = 5000$, el sesgo promedio del estimador AB se reduce sustancialmente.
+
+  Por el contrario, el estimador System muestra un sesgo muy pequeño para $N = 500$ (nunca excediendo el uno por ciento), y aún menor cuando $N = 5000$.
+  Bajo selección endógena, no detectamos cambios significativos en los resultados de sesgo para el estimador AB, mientras que el estimador System siempre muestra un sesgo muy pequeño (entre 1 y 2.25 por ciento para diferentes valores de $\rho$).
+  Notablemente, el sesgo del estimador System se vuelve más evidente conforme crece el tamaño muestral bajo selección endógena.
+
+  Los ejercicios de sensibilidad presentados en los Cuadros~\ref{tab:table2} y~\ref{tab:table3} confirman las lecciones principales del análisis: el estimador AB está moderadamente sesgado cuando $N$ es pequeño o moderado, y su sesgo se acerca a cero cuando $N$ es grande.
+  El estimador System está siempre moderadamente sesgado pero de manera estable.
+  La reducción de la dimensión temporal (Experimento~\ref{exp:short-T}) incrementa la varianza estimada pero tiene un efecto muy pequeño sobre el sesgo promedio para ambos estimadores.
+  El incremento en el grado de selección muestral (Experimento~\ref{exp:more-selection}) aumenta el sesgo promedio muy levemente pero incrementa su varianza debido a la reducción significativa en el número de observaciones.
+  Estos resultados implican que el estimador System es especialmente recomendado cuando el tamaño muestral es pequeño o incluso moderado (por ejemplo, $N \leq 1500$) y menos crítico cuando el tamaño muestral es mayor.
 
   \begin{table}[htbp]
     \begin{threeparttable}[htbp]
@@ -237,6 +271,24 @@ xtabond2 y L.y, gmm(L.y, lag(2 .)) iv(L.D.y, equation(level))
 \begin{solution} % Solution to Problem 2
   \label{sol:2}
 
+  La Figura~\ref{fig:fig1} replica la Figura~1 del trabajo original mediante simulaciones de para diferentes parámetros de persistencia y diferentes tamaños de muestra.\footnote{Como se describe en el \texttt{README}, el proceso de simulación se implementa mediante el script \texttt{run\_figure1\_sims.sh}, que ejecuta simulaciones paralelas para cada combinación de parámetros $(N, \rho, \text{modelo})$.
+    Para cada configuración, el script ejecuta tanto simulaciones con selección endógena como estimaciones en la muestra completa, generando los datos necesarios para las cuatro series mostradas en cada panel: AB (all), AB (select), System (all), y System (select).
+    Las simulaciones cubren tamaños muestrales desde $N = 200$ hasta $N = 5000$, permitiendo observar la evolución del sesgo a través de diferentes escalas de muestra.
+    Una vez completadas las simulaciones, el script \texttt{fig1.R} procesa los resultados y genera las visualizaciones utilizando el paquete \texttt{tikzDevice} de R para compatibilidad directa con \LaTeX.
+    El código genera tres paneles separados correspondientes a $\rho = 0.25, 0.50, 0.75$, cada uno como un archivo \texttt{.tex} independiente que contiene comandos TikZ.}
+  En particular, hay un gráfico para cada parámetro de persistencia $\rho \in \{0.25, 0.50, 0.75\}$, en el cual se muestra la evolución de los sesgos promedio en las simulaciones Monte Carlo para los estimadores Arellano-Bond (AB) y System (SyS) sobre la muestra completa (\emph{all}) y sobre la muestra con selección endógena (\emph{select}), para cada tamaño de muestra
+  \begin{equation*}
+    N \in \{200, 400, 600, 800, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000\}.
+  \end{equation*}
+
+  Los resultados confirman los patrones fundamentales identificados en el trabajo original y observables en el Cuadro~\ref{tab:table1}.
+  Para el estimador AB, observamos una reducción dramática (en términos absolutos) del sesgo a medida que aumenta el tamaño muestral, siendo esta mejora particularmente pronunciada para valores altos de $\rho$.
+  En el panel~\ref{fig:panel3} con $\rho = 0.75$, el sesgo del estimador AB es sustancial para muestras pequeñas pero converge rápidamente hacia cero cuando $N$ crece.
+
+  El estimador System exhibe un comportamiento cualitativamente diferente: su sesgo permanece relativamente estable y pequeño a través de todos los tamaños muestrales considerados y para todos los valores de persistencia.
+  Esta estabilidad es evidente en los tres paneles, donde las líneas correspondientes al estimador System se quedan alrededor de valores cercanos a cero sin mostrar la tendencia decreciente (en valor absoluto) dramática que caracteriza al sesgo del estimador AB.
+
+
   \begin{figure}[htbp]
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
@@ -252,16 +304,13 @@ xtabond2 y L.y, gmm(L.y, lag(2 .)) iv(L.D.y, equation(level))
       \caption{Sesgo medio, $\rho = 0.50$}
       \label{fig:panel2}
     \end{subfigure}
-
     \vfill
-
     \begin{subfigure}[b]{0.5\textwidth}
       \centering
       \resizebox{\textwidth}{!}{\input{../code/output/fig1/panel3_bias_rho075.tex}}
       \caption{Sesgo medio, $\rho = 0.75$}
       \label{fig:panel3}
     \end{subfigure}
-
     \caption{Sesgo promedio de estimadores AB y System en la muestra completa ($N\times T$ observaciones) y la muestra con selección endógena}
     \label{fig:fig1}
   \end{figure}
@@ -278,6 +327,44 @@ xtabond2 y L.y, gmm(L.y, lag(2 .)) iv(L.D.y, equation(level))
 \renewcommand{\thesolution}{\theproblem}
 \begin{solution} % Solution to Problem 3
   \label{sol:3}
+
+  A partir de la implementación de simulaciones de Monte Carlo siguiendo la metodología de \textcite{al-sadoonSimpleMethodsConsistent2019}, analizamos las propiedades de muestra finita de los estimadores de Arellano-Bond (AB) y System (SyS) bajo diferentes grados de persistencia para el proceso autorregresivo.
+
+  Los resultados del Cuadro~\ref{tab:table1} revelan patrones claramente diferenciados entre ambos estimadores.
+  Para el estimador AB, el sesgo, en valor absoluto, incrementa sistemáticamente con el parámetro de persistencia $\rho$, exhibiendo un crecimiento particularmente pronunciado cuando $\rho$ se acerca a la unidad.
+  Este comportamiento es consistente con los problemas de instrumentos débiles que caracterizan al estimador en primeras diferencias cuando la serie presenta alta persistencia.
+
+  El estimador System muestra un comportamiento cualitativamente diferente.
+  Su sesgo permanece relativamente estable y pequeño para todos los valores de $\rho$ considerados, sin mostrar el deterioro sistemático que caracteriza al estimador AB.
+  Esta estabilidad refleja la eficiencia de las condiciones de momentos adicionales en niveles que proporcionan información extra sobre los parámetros de interés.
+
+  Las diferencias entre muestras pequeñas ($N = 500$) y grandes ($N = 5000$) son sustanciales y asimétricas entre estimadores.
+  Para muestras grandes, el sesgo del estimador AB se reduce drásticamente en todos los casos, acercándose a cero como es esperado por su consistencia.
+  Esta mejora es especialmente notable para valores altos de $\rho$, donde la ganancia en precisión es considerable.
+  Es decir, la \emph{mejora} del sesgo del estimador AB cuando aumenta el tamaño de la muestra es más pronunciada para valores altos de $\rho$, como podemos ver al comparar la figura~\ref{fig:fig1} que tiene $\rho = 0.25$ con la figura~\ref{fig:panel3} que tiene $\rho = 0.75$.
+
+  El estimador System mantiene un sesgo bajo y relativamente estable, independientemente de cual sea el tamaño muestral.
+
+  Las desviaciones estándar exhiben el comportamiento esperado para ambos estimadores: disminuyen al incrementarse el tamaño muestral.
+  Sin embargo, el estimador AB consistentemente presenta mayor variabilidad que el System, especialmente para valores altos de $\rho$.
+
+  La presencia de selección endógena introduce modificaciones modestas pero sistemáticas en las propiedades de ambos estimadores.
+  Para el estimador AB, que teóricamente debería mantener su consistencia bajo selección endógena, los efectos son generalmente pequeños y en varias especificaciones del experimento se reducir el sesgo en términos absolutos cuando hay selección endógena respecto al caso de selección no endógena.
+
+  El estimador System muestra un incremento más sistemático del sesgo bajo selección endógena, particularmente evidente en muestras grandes y valores altos de $\rho$.
+  Este comportamiento es consistente con la invalidez teórica de las condiciones de momentos en niveles bajo selección endógena, aunque la magnitud, a nivel práctico, del sesgo permanece manejable.
+
+  Los experimentos reportados en los Cuadros~\ref{tab:table2} y~\ref{tab:table3} confirman la robustez general de nuestros hallazgos principales.
+  La reducción de la dimensión temporal (Experimento I) intensifica los problemas de ambos estimadores pero preserva su ordenación relativa.
+  Los experimentos que modifican las correlaciones entre componentes de error o introducen heterogeneidad adicional generalmente mantienen las conclusiones cualitativas, aunque pueden alterar las magnitudes específicas del sesgo.
+
+  En línea con las conclusiones del trabajo original, nuestros resultados muestran que en muestras pequeñas, el estimador System presenta una performance consistentemente superior al AB, exhibiendo menor sesgo y varianza para todos los valores de $\rho$ considerados.
+  Esta ventaja es particularmente pronunciada para valores altos del parámetro de persistencia, donde el estimador AB sufre problemas severos de instrumentos débiles.
+
+  En muestras grandes, la brecha entre estimadores se reduce sustancialmente.
+  La presencia de selección endógena no altera cualitativamente estas conclusiones, aunque si podemos decir en este caso que para muestras grandes en las especificaciones estudiadas, con selección endógena el estimador AB muestra un sesgo menor en términos absolutos que el estimador system.
+
+  En la práctica, si estamos trabajando con paneles dinámicos potencialmente desbalanceados, estos resultados sugieren que el uso directo de estimadores GMM-IV estándar, particularmente el System en muestras pequeñas y con parámetros de persistencia mayores, puede proveer estimaciones razonablemente precisas sin necesidad de corrección explícita por selección muestral, exhibiendo menor sesgo que el estimador AB.
 
 \end{solution}
 \endgroup
