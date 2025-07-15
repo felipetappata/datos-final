@@ -1,4 +1,4 @@
-# Dynamic Panel Data Selection Models
+# Datos de Panel: Final Exam
 
 This project replicates the Monte Carlo Simulations from Section 3 of Sadoon et al. (2019).
 
