@@ -22,7 +22,7 @@
 *.fignore
 
 # LaTeX output directory (except final PDFs)
-latex/output/
+latex/output/latex/*
 !latex/output/latex/*.pdf
 
 # Biber cache
