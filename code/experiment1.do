@@ -2,13 +2,6 @@
    EXPERIMENT 1: VERY SHORT T (T=4) - TABLE 2 REPLICATION
    =========================================================================
    
-   This script implements Experiment I from Table 2 of Al Sadoon et al. (2019):
-   "Very short T (T=4)" - reducing the longitudinal dimension from T=7 to T=4.
-   
-   This experiment tests the sensitivity of AB and System GMM estimators to
-   a shorter time dimension in endogenous selection models. We generate 20
-   periods but use only 4 for estimation (after discarding 13 burn-in periods).
-   
    Command line usage:
    stata -b do experiment1.do N model rho
    
@@ -20,7 +13,7 @@
    Example: stata -b do experiment1.do 500 A 0.25
    
    Author: Felipe Tappata
-   Date: January 2025
+   Date: July 2025
    ========================================================================= */
 
 clear all

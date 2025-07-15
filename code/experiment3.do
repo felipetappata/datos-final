@@ -1,15 +1,6 @@
 /* ========================================================================= 
    EXPERIMENT 3: INCREASING RATIO OF VARIANCES - TABLE 2 REPLICATION
    =========================================================================
-   
-   This script implements Experiment III from Table 2 of Al Sadoon et al. (2019):
-   "Increasing the ratio of variances: σ_η/σ_ε = 2"
-   
-   This experiment tests the sensitivity of AB and System GMM estimators when
-   the ratio of the variance of the individual heterogeneous component to the 
-   variance of the time-variant component of the outcome equation is increased
-   to σ_α²/σ_ε² = 2. This is achieved by setting σ_η = 2 while keeping σ_ε = 1.
-   
    Command line usage:
    stata -b do experiment3.do N model rho
    
@@ -20,8 +11,8 @@
    
    Example: stata -b do experiment3.do 500 A 0.25
    
-   Author: Generated for Al Sadoon et al. (2019) replication study
-   Date: January 2025
+   Author: Felipe I. Tappata
+   Date: July 2025
    ========================================================================= */
 
 clear all

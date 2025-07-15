@@ -2,15 +2,6 @@
    EXPERIMENT 5: NON-STATIONARY TIME-VARYING ERROR COMPONENTS - TABLE 2 REPLICATION
    =========================================================================
    
-   This script implements Experiment V from Table 2 of Al Sadoon et al. (2019):
-   "Non-stationary time-varying error components"
-   
-   This experiment tests the sensitivity of AB and System GMM estimators when:
-   1. The variance of time-varying errors varies over time: εᵢₜ or uᵢₜ are 
-      multiplied by a time-varying Bernoulli process taking either 1 or 2.
-   2. The correlation coefficient between time-varying errors varies over time:
-      ϑ is multiplied by either 0.5, 1 or 2.
-   
    Command line usage:
    stata -b do experiment5.do N model rho
    
@@ -21,8 +12,8 @@
    
    Example: stata -b do experiment5.do 500 A 0.25
    
-   Author: Generated for Al Sadoon et al. (2019) replication study
-   Date: January 2025
+   Author: Felipe I. Tappata
+   Date: July 2025
    ========================================================================= */
 
 clear all

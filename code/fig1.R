@@ -1,3 +1,14 @@
+# ========================================================================= 
+# FIGURE 1: BIAS COMPARISON ACROSS SAMPLE SIZES - VISUALIZATION
+# =========================================================================
+# 
+# Usage:
+# Rscript fig1.R
+# 
+# Author: Felipe I. Tappata
+# Date: July 2025
+# =========================================================================
+
 library(tidyverse)
 library(here)
 library(tikzDevice)

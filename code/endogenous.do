@@ -2,10 +2,6 @@
    REPLICATION OF AL SADOON ET AL. (2019) TABLE 1 - ENDOGENOUS SELECTION
    =========================================================================
    
-   This script replicates the "Endogenous selection" columns of Table 1
-   from Al Sadoon et al. (2019), examining the performance of AB and System 
-   GMM estimators in dynamic panel models with endogenous sample selection.
-   
    Command line usage:
    stata -b do endogenous.do N model rho
    
@@ -16,8 +12,8 @@
    
    Example: stata -b do endogenous.do 500 A 0.25
    
-   Author: Generated for replication study
-   Date: January 2025
+   Author: Felipe I. Tappata
+   Date: July 2025
    ========================================================================= */
 
 clear all

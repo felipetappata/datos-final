@@ -3,11 +3,6 @@
 # ========================================================================
 # PARALLEL EXECUTION SCRIPT FOR FIGURE 1 SIMULATIONS
 # ========================================================================
-# 
-# This script runs simulations for Figure 1, varying N and rho values.
-# For each (N, rho, model) combination, it runs endogenous2.do which 
-# generates both endogenous selection estimates AND full sample estimates
-# (corresponding to "AB all" and "system all" from Figure 1).
 #
 # Usage: bash run_figure1_sims.sh "N_values" "rho_values" "models"
 #
@@ -17,8 +12,6 @@
 #   - endo_modelA_N200_rho0.25.csv (endogenous selection estimates)
 #   - fullsample_modelA_N200_rho0.25.csv (full sample estimates - "AB all", "system all")
 #
-# Note: Each simulation runs as a background process. Monitor your system 
-# resources and adjust the number of parallel processes accordingly.
 # ========================================================================
 
 # Check if correct number of arguments provided

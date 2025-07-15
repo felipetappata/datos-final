@@ -22,8 +22,8 @@
    
    Example: stata -b do experiment4.do 500 A 0.25
    
-   Author: Generated for Al Sadoon et al. (2019) replication study
-   Date: January 2025
+   Author: Felipe I. Tappata
+   Date: July 2025
    ========================================================================= */
 
 clear all

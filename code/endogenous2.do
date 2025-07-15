@@ -1,30 +1,8 @@
 /* ========================================================================= 
    REPLICATION OF AL SADOON ET AL. (2019) - ENDOGENOUS + FULL SAMPLE
    =========================================================================
-   
-   This script replicates both:
-   1. "Endogenous selection" columns of Table 1 (selected sample estimates)
-   2. "AB all" and "system all" from Figure 1 (full sample estimates)
-   
-   For each Monte Carlo replication, we estimate on both:
-   - Selected sample: y = y_star if d == 1 (endogenous selection)
-   - Full sample: y_full = y_star (no selection, complete NxT sample)
-   
-   display as text ""
-display as text "Results saved to:"
-display as text "SELECTED SAMPLE (endogenous selection):"
-display as text "  Stata format: output/partial/`filename'"
-display as text "  Text format:  `txt_filename'"
-display as text "  CSV format:   `csv_filename'"
-display as text "FULL SAMPLE (no selection):"
-display as text "  Stata format: output/partial/`filename_full'"
-display as text "  Text format:  `txt_filename_full'"
-display as text "  CSV format:   `csv_filename_full'"
-display as text ""
-display as text "========================================================================="
-display as text "SIMULATION COMPLETE FOR N=`N', MODEL=`model', RHO=`rho'"
-display as text "Generated both endogenous selection and full sample estimates"
-display as text "========================================================================"e usage:
+
+   Usage: 
    stata -b do endogenous2.do N model rho
    
    Where:
@@ -38,8 +16,8 @@ display as text "===============================================================
    - endo_modelA_N500_rho0.25.csv (selected sample estimates)
    - fullsample_modelA_N500_rho0.25.csv (full sample estimates)
    
-   Author: Generated for replication study
-   Date: January 2025
+   Author: Felipe I. Tappata
+   Date: July 2025
    ========================================================================= */
 
 clear all

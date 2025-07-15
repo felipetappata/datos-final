@@ -3,12 +3,8 @@
 Table 3 Generator for Al Sadoon et al. (2019) Replication
 =========================================================
 
-This script reads Monte Carlo simulation results from CSV files and generates
-a LaTeX tabular environment (not full table) replicating Table 3 from Al Sadoon et al. (2019).
-This is exactly like Table 2 but for N = 5000.
-
 Author: Felipe I. Tappata
-Date: January 2025
+Date: July 2025
 """
 
 import pandas as pd

@@ -2,14 +2,6 @@
    EXPERIMENT 2: MORE SAMPLE SELECTION (25%) - TABLE 2 REPLICATION
    =========================================================================
    
-   This script implements Experiment II from Table 2 of Al Sadoon et al. (2019):
-   "More sample selection (25%)" - increasing the degree of sample selection
-   from 15% to 25%.
-   
-   This experiment tests the sensitivity of AB and System GMM estimators to
-   higher rates of sample attrition in endogenous selection models. The
-   parameter 'a' is adjusted to achieve P(d_it* > 0) = 0.75 instead of 0.85.
-   
    Command line usage:
    stata -b do experiment2.do N model rho
    
@@ -20,8 +12,8 @@
    
    Example: stata -b do experiment2.do 500 A 0.25
    
-   Author: Felipe Tappata
-   Date: January 2025
+   Author: Felipe I. Tappata
+   Date: July 2025
    ========================================================================= */
 
 clear all
