@@ -1,6 +1,6 @@
 # Datos de Panel: Final Exam
 
-This project replicates the Monte Carlo Simulations from Section 3 of Sadoon et al. (2019).
+This project replicates the Monte Carlo Simulations from Section 3 of Al-Sadoon et al. (2019).
 
 **Note: This repository will be archived on 2025-08-14 or afterwards.**
 
